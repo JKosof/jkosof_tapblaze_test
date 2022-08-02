@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography;
 
 public class Wheel : MonoBehaviour
 {
@@ -15,7 +14,6 @@ public class Wheel : MonoBehaviour
     float speed = 500f;
     public string getDataURL = "http://23.240.220.14:3060/roulettegame/chances.php";
     public string postDataURL = "http://23.240.220.14:3060/roulettegame/uploadresults.php";
-    private string secretKey = "mySecretKey";
 
     //ideally in a real scenario player id should be acquired from elsewhere
     string playerId = "p0001";
@@ -107,8 +105,6 @@ public class Wheel : MonoBehaviour
         form.AddField("id", playerId);
         form.AddField("sector", sector);
         form.AddField("reward", reward);
-        //string hash = HashInput(id + sector + reward + secretKey);
-        //string post_url = postDataURL + "id=" + UnityWebRequest.EscapeURL(id) + "&sector=" + sector + "&reward=" + reward + "&hash=" + hash;
         UnityWebRequest hs_post = UnityWebRequest.Post(postDataURL, form);
         yield return hs_post.SendWebRequest();
         if (hs_post.error != null)
@@ -148,16 +144,6 @@ public class Wheel : MonoBehaviour
             TestLoadedChances();
         else
             SpinLoadedWheel();
-    }
-
-    public string HashInput(string input)
-    {
-        SHA256Managed hm = new SHA256Managed();
-        byte[] hashValue =
-                hm.ComputeHash(System.Text.Encoding.ASCII.GetBytes(input));
-        string hash_convert =
-                 System.BitConverter.ToString(hashValue).Replace("-", "").ToLower();
-        return hash_convert;
     }
 
     int GetWheelResultSector()
